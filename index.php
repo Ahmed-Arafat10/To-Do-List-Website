@@ -15,32 +15,49 @@ $ConnectDataBase = mysqli_connect($Host, $User, $Password, $DataBase); //Build-i
 
 function print_message($text, $type)
 {
-    if ($type == "Danger") echo "<div style='text-align:center;background-color:red;padding:20px;color:white;'  >" . $text . "</div>";
-    else echo "<div style='text-align:center;background-color:green;padding:20px;color:white;'  >" . $text . "</div>";
+    if ($type == "Danger") {
+        echo "<div  style='text-align:center;margin-bottom:0' class='alert alert-danger alert-dismissible fade show' role='alert'>
+    " . $text . "
+     <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+       <span aria-hidden='true'>&times;</span>
+     </button>
+   </div>";
+    } else {
+        echo "<div  style='text-align:center;margin-bottom:0' class='alert alert-success alert-dismissible fade show' role='alert'>
+            " . $text . "
+    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+      <span aria-hidden='true'>&times;</span>
+    </button>
+  </div>";
+    }
 }
 
 if (isset($_POST['SubmitBTN'])) {
     $Note = $_POST['Note'];
     $InsertQuery = "INSERT INTO `list_table` VALUES(NULL,'$Note',0)";
     $ExecuteQuery = mysqli_query($ConnectDataBase, $InsertQuery);
-    
+
     if ($ExecuteQuery)  print_message("Done Inserting Note", "normal");
-    
+
     else echo "NOOO";
-}
-if (isset($_GET['UpdateState'])) {
-    $ID = $_GET['UpdateState'];
-    $UpdateQuery = "UPDATE `list_table` SET isdone = 1 WHERE id =  $ID";
-    $ExecuteQuery = mysqli_query($ConnectDataBase, $UpdateQuery);
-    if ($ExecuteQuery) print_message("Done Updating Note State", "normal");
-    else echo "NOOO";
-}
-if (isset($_GET['Delete'])) {
-    $ID = $_GET['Delete'];
-    $DeleteQuery = "DELETE FROM `list_table` WHERE id =  $ID";
-    $ExecuteQuery = mysqli_query($ConnectDataBase, $DeleteQuery);
-    if ($ExecuteQuery) print_message("Done Deleting Note", "Danger");
-    else echo "NOOO";
+} else {
+    if (isset($_GET['Delete'])) {
+        $ID = $_GET['Delete'];
+        $DeleteQuery = "DELETE FROM `list_table` WHERE id =  $ID";
+        if ($ID != -1) {
+            $ExecuteQuery = mysqli_query($ConnectDataBase, $DeleteQuery);
+            if ($ExecuteQuery) print_message("Done Deleting Note", "Danger");
+            else echo "NOOO";
+        }
+    } else {
+        if (isset($_GET['UpdateState'])) {
+            $ID = $_GET['UpdateState'];
+            $UpdateQuery = "UPDATE `list_table` SET isdone = 1 WHERE id =  $ID";
+            $ExecuteQuery = mysqli_query($ConnectDataBase, $UpdateQuery);
+            if ($ExecuteQuery) print_message("Done Updating Note State", "normal");
+            else echo "NOOO";
+        }
+    }
 }
 ?>
 
@@ -56,14 +73,21 @@ if (isset($_GET['Delete'])) {
     <link rel="stylesheet" href="index.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="AboutMe.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
 </head>
 
 <body>
+    <button id="myBtn"><a href="#NNAAVV" style="color:black">Top</a></button>
     <!-- NavBar Start -->
-    <nav>
+    <nav id="NNAAVV">
         <div class="img-container1">
             <a href="index.php"><img style="border-radius: 15px;" src="Pic/list.png" height="75" width="75" alt=""></a>
+
             <h1><span class="span1">To-</span><span class="span2">Do-</span><span class="span3">List</span></h1>
+
         </div>
         <div class="img-container2">
             <ul class="nav-ul">
@@ -77,12 +101,18 @@ if (isset($_GET['Delete'])) {
 
     <!-- Form Start -->
     <fieldset style="color:burlywood">
-        <legend>Just Enter Note You Want To Save</legend>
+        <div>
+            <legend>JUST Enter Note You Want To Save</legend>
+        </div>
+
         <form method="POST">
             <!-- <label for="">Note</label> -->
             <textarea required name="Note" placeholder="Enter Note Here!"></textarea>
-            <button type="submit" name="SubmitBTN">Save Note</button>
+
+            <button class="BTNN text-center" type="submit" name="SubmitBTN">Save Note</button>
+
         </form>
+
     </fieldset>
     <!-- Form End -->
 
@@ -96,7 +126,7 @@ if (isset($_GET['Delete'])) {
             </thead>
         </tr>
         <?php
-        $SelectQuery = "SELECT * FROM `list_table` ORDER BY isdone";
+        $SelectQuery = "SELECT * FROM `list_table` ORDER BY isdone , Note";
         $ExecuteQuery = mysqli_query($ConnectDataBase, $SelectQuery);
         $i = 0;
         foreach ($ExecuteQuery as $FetchData) {
@@ -138,7 +168,7 @@ if (isset($_GET['Delete'])) {
             Tony Stark : You're from Earth?
             Peter Quill : I'm not from Earth, I'm from Missouri.
         </p>
-        <div class="card">
+        <div class="CARD">
             <div class="front">
                 <header>
                     <img src="./Pic/ME.jpg" alt="My pic">
@@ -164,37 +194,50 @@ if (isset($_GET['Delete'])) {
     <p class="Quote">Today's Quote : Be The Change That You Wish Yo See In The World</p>
 
     <!-- Footer Start -->
-    <footer>
-        <div class="left-part-footer">
-            <div class="info-footer">
-                <img src="./Pic/location.png" height="25" width="25" alt="">
-                <p>Cairo, Egypt</p>
+
+    <footer class="container-no-gutters">
+        <div class="row">
+            <div class="col-4">
+                <div class="left-part-footer">
+                    <div class="info-footer">
+                        <img src="./Pic/location.png" height="25" width="25" alt="">
+                        <p>Cairo, Egypt</p>
+                    </div>
+                    <div class="info-footer">
+                        <img src="./Pic/phone.png" height="25" width="25" alt="">
+                        <p>01145352685</p>
+                    </div>
+                    <div class="info-footer">
+                        <img src="./Pic/email.png" height="25" width="25" alt="">
+                        <p><a style="color:wheat" href="mailto:ahmedmoyousry.bis@gmail.com">ahmedmoyousry.bis@gmail.com</a></p>
+                    </div>
+                </div>
             </div>
-            <div class="info-footer">
-                <img src="./Pic/phone.png" height="25" width="25" alt="">
-                <p>01145352685</p>
+            <div class="col-4">
+                <div class="h1-part-footer">
+                    <h1 style="font-family: 'Tangerine', serif;"> <span style="color: black;">A</span>rafat</h1>
+                </div>
+                <div class="mid-part-footer">
+                    <p>All Copyrights Are reserved To Ahmed Arafat &copy; 2021 <br> :) اللي هو انا يعني</p>
+                </div>
             </div>
-            <div class="info-footer">
-                <img src="./Pic/email.png" height="25" width="25" alt="">
-                <p>ahmedmoyousry.bis@gmail.com</p>
+            <div class="col-4">
+                <div class="right-part-footer">
+                    <h4>About This Project</h4>
+                    <p>I Build This Project Using Pure Html , CSS , PHP , SQL for my Practical Exam For E-Commerce Course</p>
+                    <a href="https://www.facebook.com/AhmedArafat01" target="_blank"> <img class="ICONIMG" src="./Pic/Facebookicon.png" height="40" width="40" alt=""></a>
+                    <a href="https://www.instagram.com/ahmedarafat__/" target="_blank"> <img class="ICONIMG" src="./Pic/instagram.png" height="40" width="40" alt=""></a>
+                    <a href="https://www.linkedin.com/in/ahmed-mohamed-yousry-0101/" target="_blank"> <img class="ICONIMG" src="./Pic//linkedin.png" height="40" width="40" alt=""></a>
+                    <a href="https://github.com/Ahmed-Arafat10/" target="_blank"> <img class="ICONIMG" src="./Pic/githubicon.png" height="40" width="40" alt=""></a>
+                </div>
             </div>
-        </div>
-        <div class="h1-part-footer">
-            <h1 style="font-family: 'Tangerine', serif;"> <span style="color: black;">A</span>rafat</h1>
-        </div>
-        <div class="mid-part-footer">
-            <p>All Copyrights Are reserved To Ahmed Arafat &copy; 2021 <br> :) اللي هو انا يعني</p>
-        </div>
-        <div class="right-part-footer">
-            <h4>About This Project</h4>
-            <p>I Build This Project Using Pure Html , CSS , PHP , SQL for my Practical Exam For E-Commerce Course</p>
-            <img src="./Pic/Facebookicon.png" height="40" width="40" alt="">
-            <img src="./Pic/instagram.png" height="40" width="40" alt="">
-            <img src="./Pic//linkedin.png" height="40" width="40" alt="">
-            <img src="./Pic/githubicon.png" height="40" width="40" alt="">
         </div>
     </footer>
     <!-- Footer End -->
 </body>
 
+<<<<<<< HEAD
+>>>>>>> 720f781... Adding New Featutes + Using Bootstrap 4
+=======
+>>>>>>> 720f781... Adding New Featutes + Using Bootstrap 4
 </html>
