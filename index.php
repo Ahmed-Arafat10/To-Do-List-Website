@@ -207,7 +207,7 @@ if (isset($_POST['SubmitBTN'])) {
                 </div>
                 <div class="info-footer">
                     <img src="./Pic/email.png" height="25" width="25" alt="">
-                    <p><a style="color:wheat" href="mailto:ahmedmoyousry.bis@gmail.com">ahmedmoyousry.bis@gmail.com</a>
+                    <p><a style="color:wheat" href="mailto:arafat.software.engineer@gmail.com">arafat.software.engineer@gmail.com</a>
                     </p>
                 </div>
             </div>
